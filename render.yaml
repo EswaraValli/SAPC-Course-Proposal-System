@@ -1,0 +1,46 @@
+services:
+  # 1. Full-Stack Web Service (Flask Backend + Built React SPA Frontend)
+  - type: web
+    name: sapc-course-proposal-system
+    env: python
+    plan: free
+    region: oregon
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn wsgi:app --bind 0.0.0.0:$PORT"
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sapc-postgres-db
+          property: connectionString
+      - key: PDF_STORAGE_DIR
+        value: ./generated_pdfs
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        value: Admin@IITGN2026
+      - key: ADMIN_EMAIL
+        value: academic.office@iitgn.ac.in
+      - key: MAIL_BACKEND
+        value: local
+      - key: MAIL_FROM
+        value: sapc-academic@iitgn.ac.in
+      - key: MAIL_SENDER_NAME
+        value: "SAPC Academic Office, IIT Gandhinagar"
+      - key: SAPC_UG_OFFICE_EMAIL
+        value: ar.ug@iitgn.ac.in
+      - key: SAPC_DOAA_EMAIL
+        value: doaa@iitgn.ac.in
+      - key: NOTIFICATION_RECIPIENTS
+        value: ""
+
+databases:
+  # 2. Managed PostgreSQL Production Database
+  - name: sapc-postgres-db
+    databaseName: sapc_course_db
+    user: sapc_admin
+    plan: free
+    region: oregon
