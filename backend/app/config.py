@@ -13,9 +13,11 @@ class Config:
         'DATABASE_URL', 
         f"sqlite:///{BASE_DIR / 'sapc_course_proposals.db'}"
     )
-    # Fix for Heroku/Render postgres:// vs postgresql://
+    # Ensure Render/Heroku PostgreSQL URLs use psycopg2 driver explicitly
     if DATABASE_URL.startswith("postgres://"):
-        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg2://", 1)
+    elif DATABASE_URL.startswith("postgresql://") and not DATABASE_URL.startswith("postgresql+"):
+        DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://", 1)
         
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     

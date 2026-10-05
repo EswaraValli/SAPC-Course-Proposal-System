@@ -13,6 +13,13 @@ def init_db(app):
     global engine, _SessionFactory
     database_url = app.config['DATABASE_URL']
     
+    # Ensure Render/Heroku PostgreSQL URLs use psycopg2 driver explicitly
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql+psycopg2://", 1)
+    elif database_url.startswith("postgresql://") and not database_url.startswith("postgresql+"):
+        database_url = database_url.replace("postgresql://", "postgresql+psycopg2://", 1)
+    app.config['DATABASE_URL'] = database_url
+    
     # Engine configuration
     connect_args = {}
     if database_url.startswith('sqlite'):
